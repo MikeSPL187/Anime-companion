@@ -5,8 +5,10 @@ import '../../../data/providers/franchise_repository_provider.dart';
 import '../../../data/providers/local_repository_providers.dart';
 import '../../../domain/enums/enums.dart';
 import '../../../domain/models/anime_details.dart';
+import '../../../domain/models/anime_summary.dart';
 import '../../../domain/models/franchise_entry.dart';
 import '../../../domain/models/library_entry.dart';
+import '../../../domain/models/library_presentation_snapshot.dart';
 import '../../../domain/models/watch_progress.dart';
 
 final animeDetailsProvider = FutureProvider.autoDispose
@@ -54,12 +56,23 @@ class AnimeDetailsActions {
 
   final Ref _ref;
 
-  Future<void> setStatus(String animeId, LibraryStatus status) {
-    return _ref.read(libraryRepositoryProvider).setStatus(animeId, status);
+  Future<void> setStatus(AnimeSummary anime, LibraryStatus status) {
+    return _ref
+        .read(libraryRepositoryProvider)
+        .setStatus(
+          anime.id,
+          status,
+          snapshot: LibraryPresentationSnapshot.fromAnimeSummary(anime),
+        );
   }
 
-  Future<void> toggleFavorite(String animeId) {
-    return _ref.read(libraryRepositoryProvider).toggleFavorite(animeId);
+  Future<void> toggleFavorite(AnimeSummary anime) {
+    return _ref
+        .read(libraryRepositoryProvider)
+        .toggleFavorite(
+          anime.id,
+          snapshot: LibraryPresentationSnapshot.fromAnimeSummary(anime),
+        );
   }
 
   Future<void> removeFromLibrary(String animeId) {

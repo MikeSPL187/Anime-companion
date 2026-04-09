@@ -49,6 +49,25 @@ class SearchHistoryEntries extends Table {
   Set<Column<Object>> get primaryKey => {query};
 }
 
+class LibraryPresentationSnapshots extends Table {
+  @override
+  String get tableName => 'library_presentation_snapshots';
+
+  TextColumn get animeId => text().named('anime_id')();
+  TextColumn get title => text()();
+  TextColumn get altTitle => text().named('alt_title').nullable()();
+  TextColumn get posterUrl => text().named('poster_url').nullable()();
+  TextColumn get animeType => text().named('type').nullable()();
+  IntColumn get year => integer().nullable()();
+  IntColumn get episodesTotal => integer().named('episodes_total').nullable()();
+  IntColumn get favoritesCount =>
+      integer().named('favorites_count').nullable()();
+  DateTimeColumn get snapshotSavedAt => dateTime().named('snapshot_saved_at')();
+
+  @override
+  Set<Column<Object>> get primaryKey => {animeId};
+}
+
 class CachedSummaryLists extends Table {
   @override
   String get tableName => 'cached_summary_lists';
@@ -102,6 +121,7 @@ class CachedScheduleData extends Table {
     LibraryEntries,
     WatchProgressEntries,
     SearchHistoryEntries,
+    LibraryPresentationSnapshots,
     CachedSummaryLists,
     CachedReleaseDetails,
     CachedFranchiseData,
@@ -112,13 +132,17 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
       onCreate: (migrator) => migrator.createAll(),
-      onUpgrade: (migrator, from, to) async {},
+      onUpgrade: (migrator, from, to) async {
+        if (from < 2) {
+          await migrator.createTable(libraryPresentationSnapshots);
+        }
+      },
     );
   }
 }

@@ -1028,6 +1028,602 @@ class SearchHistoryEntriesCompanion
   }
 }
 
+class $LibraryPresentationSnapshotsTable extends LibraryPresentationSnapshots
+    with
+        TableInfo<
+          $LibraryPresentationSnapshotsTable,
+          LibraryPresentationSnapshot
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LibraryPresentationSnapshotsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _animeIdMeta = const VerificationMeta(
+    'animeId',
+  );
+  @override
+  late final GeneratedColumn<String> animeId = GeneratedColumn<String>(
+    'anime_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _altTitleMeta = const VerificationMeta(
+    'altTitle',
+  );
+  @override
+  late final GeneratedColumn<String> altTitle = GeneratedColumn<String>(
+    'alt_title',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _posterUrlMeta = const VerificationMeta(
+    'posterUrl',
+  );
+  @override
+  late final GeneratedColumn<String> posterUrl = GeneratedColumn<String>(
+    'poster_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _animeTypeMeta = const VerificationMeta(
+    'animeType',
+  );
+  @override
+  late final GeneratedColumn<String> animeType = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<int> year = GeneratedColumn<int>(
+    'year',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _episodesTotalMeta = const VerificationMeta(
+    'episodesTotal',
+  );
+  @override
+  late final GeneratedColumn<int> episodesTotal = GeneratedColumn<int>(
+    'episodes_total',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _favoritesCountMeta = const VerificationMeta(
+    'favoritesCount',
+  );
+  @override
+  late final GeneratedColumn<int> favoritesCount = GeneratedColumn<int>(
+    'favorites_count',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _snapshotSavedAtMeta = const VerificationMeta(
+    'snapshotSavedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> snapshotSavedAt =
+      GeneratedColumn<DateTime>(
+        'snapshot_saved_at',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    animeId,
+    title,
+    altTitle,
+    posterUrl,
+    animeType,
+    year,
+    episodesTotal,
+    favoritesCount,
+    snapshotSavedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'library_presentation_snapshots';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LibraryPresentationSnapshot> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('anime_id')) {
+      context.handle(
+        _animeIdMeta,
+        animeId.isAcceptableOrUnknown(data['anime_id']!, _animeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_animeIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('alt_title')) {
+      context.handle(
+        _altTitleMeta,
+        altTitle.isAcceptableOrUnknown(data['alt_title']!, _altTitleMeta),
+      );
+    }
+    if (data.containsKey('poster_url')) {
+      context.handle(
+        _posterUrlMeta,
+        posterUrl.isAcceptableOrUnknown(data['poster_url']!, _posterUrlMeta),
+      );
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _animeTypeMeta,
+        animeType.isAcceptableOrUnknown(data['type']!, _animeTypeMeta),
+      );
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+        _yearMeta,
+        year.isAcceptableOrUnknown(data['year']!, _yearMeta),
+      );
+    }
+    if (data.containsKey('episodes_total')) {
+      context.handle(
+        _episodesTotalMeta,
+        episodesTotal.isAcceptableOrUnknown(
+          data['episodes_total']!,
+          _episodesTotalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('favorites_count')) {
+      context.handle(
+        _favoritesCountMeta,
+        favoritesCount.isAcceptableOrUnknown(
+          data['favorites_count']!,
+          _favoritesCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('snapshot_saved_at')) {
+      context.handle(
+        _snapshotSavedAtMeta,
+        snapshotSavedAt.isAcceptableOrUnknown(
+          data['snapshot_saved_at']!,
+          _snapshotSavedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_snapshotSavedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {animeId};
+  @override
+  LibraryPresentationSnapshot map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LibraryPresentationSnapshot(
+      animeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}anime_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      altTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}alt_title'],
+      ),
+      posterUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}poster_url'],
+      ),
+      animeType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      ),
+      year: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}year'],
+      ),
+      episodesTotal: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}episodes_total'],
+      ),
+      favoritesCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}favorites_count'],
+      ),
+      snapshotSavedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}snapshot_saved_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LibraryPresentationSnapshotsTable createAlias(String alias) {
+    return $LibraryPresentationSnapshotsTable(attachedDatabase, alias);
+  }
+}
+
+class LibraryPresentationSnapshot extends DataClass
+    implements Insertable<LibraryPresentationSnapshot> {
+  final String animeId;
+  final String title;
+  final String? altTitle;
+  final String? posterUrl;
+  final String? animeType;
+  final int? year;
+  final int? episodesTotal;
+  final int? favoritesCount;
+  final DateTime snapshotSavedAt;
+  const LibraryPresentationSnapshot({
+    required this.animeId,
+    required this.title,
+    this.altTitle,
+    this.posterUrl,
+    this.animeType,
+    this.year,
+    this.episodesTotal,
+    this.favoritesCount,
+    required this.snapshotSavedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['anime_id'] = Variable<String>(animeId);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || altTitle != null) {
+      map['alt_title'] = Variable<String>(altTitle);
+    }
+    if (!nullToAbsent || posterUrl != null) {
+      map['poster_url'] = Variable<String>(posterUrl);
+    }
+    if (!nullToAbsent || animeType != null) {
+      map['type'] = Variable<String>(animeType);
+    }
+    if (!nullToAbsent || year != null) {
+      map['year'] = Variable<int>(year);
+    }
+    if (!nullToAbsent || episodesTotal != null) {
+      map['episodes_total'] = Variable<int>(episodesTotal);
+    }
+    if (!nullToAbsent || favoritesCount != null) {
+      map['favorites_count'] = Variable<int>(favoritesCount);
+    }
+    map['snapshot_saved_at'] = Variable<DateTime>(snapshotSavedAt);
+    return map;
+  }
+
+  LibraryPresentationSnapshotsCompanion toCompanion(bool nullToAbsent) {
+    return LibraryPresentationSnapshotsCompanion(
+      animeId: Value(animeId),
+      title: Value(title),
+      altTitle: altTitle == null && nullToAbsent
+          ? const Value.absent()
+          : Value(altTitle),
+      posterUrl: posterUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(posterUrl),
+      animeType: animeType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(animeType),
+      year: year == null && nullToAbsent ? const Value.absent() : Value(year),
+      episodesTotal: episodesTotal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(episodesTotal),
+      favoritesCount: favoritesCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(favoritesCount),
+      snapshotSavedAt: Value(snapshotSavedAt),
+    );
+  }
+
+  factory LibraryPresentationSnapshot.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LibraryPresentationSnapshot(
+      animeId: serializer.fromJson<String>(json['animeId']),
+      title: serializer.fromJson<String>(json['title']),
+      altTitle: serializer.fromJson<String?>(json['altTitle']),
+      posterUrl: serializer.fromJson<String?>(json['posterUrl']),
+      animeType: serializer.fromJson<String?>(json['animeType']),
+      year: serializer.fromJson<int?>(json['year']),
+      episodesTotal: serializer.fromJson<int?>(json['episodesTotal']),
+      favoritesCount: serializer.fromJson<int?>(json['favoritesCount']),
+      snapshotSavedAt: serializer.fromJson<DateTime>(json['snapshotSavedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'animeId': serializer.toJson<String>(animeId),
+      'title': serializer.toJson<String>(title),
+      'altTitle': serializer.toJson<String?>(altTitle),
+      'posterUrl': serializer.toJson<String?>(posterUrl),
+      'animeType': serializer.toJson<String?>(animeType),
+      'year': serializer.toJson<int?>(year),
+      'episodesTotal': serializer.toJson<int?>(episodesTotal),
+      'favoritesCount': serializer.toJson<int?>(favoritesCount),
+      'snapshotSavedAt': serializer.toJson<DateTime>(snapshotSavedAt),
+    };
+  }
+
+  LibraryPresentationSnapshot copyWith({
+    String? animeId,
+    String? title,
+    Value<String?> altTitle = const Value.absent(),
+    Value<String?> posterUrl = const Value.absent(),
+    Value<String?> animeType = const Value.absent(),
+    Value<int?> year = const Value.absent(),
+    Value<int?> episodesTotal = const Value.absent(),
+    Value<int?> favoritesCount = const Value.absent(),
+    DateTime? snapshotSavedAt,
+  }) => LibraryPresentationSnapshot(
+    animeId: animeId ?? this.animeId,
+    title: title ?? this.title,
+    altTitle: altTitle.present ? altTitle.value : this.altTitle,
+    posterUrl: posterUrl.present ? posterUrl.value : this.posterUrl,
+    animeType: animeType.present ? animeType.value : this.animeType,
+    year: year.present ? year.value : this.year,
+    episodesTotal: episodesTotal.present
+        ? episodesTotal.value
+        : this.episodesTotal,
+    favoritesCount: favoritesCount.present
+        ? favoritesCount.value
+        : this.favoritesCount,
+    snapshotSavedAt: snapshotSavedAt ?? this.snapshotSavedAt,
+  );
+  LibraryPresentationSnapshot copyWithCompanion(
+    LibraryPresentationSnapshotsCompanion data,
+  ) {
+    return LibraryPresentationSnapshot(
+      animeId: data.animeId.present ? data.animeId.value : this.animeId,
+      title: data.title.present ? data.title.value : this.title,
+      altTitle: data.altTitle.present ? data.altTitle.value : this.altTitle,
+      posterUrl: data.posterUrl.present ? data.posterUrl.value : this.posterUrl,
+      animeType: data.animeType.present ? data.animeType.value : this.animeType,
+      year: data.year.present ? data.year.value : this.year,
+      episodesTotal: data.episodesTotal.present
+          ? data.episodesTotal.value
+          : this.episodesTotal,
+      favoritesCount: data.favoritesCount.present
+          ? data.favoritesCount.value
+          : this.favoritesCount,
+      snapshotSavedAt: data.snapshotSavedAt.present
+          ? data.snapshotSavedAt.value
+          : this.snapshotSavedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LibraryPresentationSnapshot(')
+          ..write('animeId: $animeId, ')
+          ..write('title: $title, ')
+          ..write('altTitle: $altTitle, ')
+          ..write('posterUrl: $posterUrl, ')
+          ..write('animeType: $animeType, ')
+          ..write('year: $year, ')
+          ..write('episodesTotal: $episodesTotal, ')
+          ..write('favoritesCount: $favoritesCount, ')
+          ..write('snapshotSavedAt: $snapshotSavedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    animeId,
+    title,
+    altTitle,
+    posterUrl,
+    animeType,
+    year,
+    episodesTotal,
+    favoritesCount,
+    snapshotSavedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LibraryPresentationSnapshot &&
+          other.animeId == this.animeId &&
+          other.title == this.title &&
+          other.altTitle == this.altTitle &&
+          other.posterUrl == this.posterUrl &&
+          other.animeType == this.animeType &&
+          other.year == this.year &&
+          other.episodesTotal == this.episodesTotal &&
+          other.favoritesCount == this.favoritesCount &&
+          other.snapshotSavedAt == this.snapshotSavedAt);
+}
+
+class LibraryPresentationSnapshotsCompanion
+    extends UpdateCompanion<LibraryPresentationSnapshot> {
+  final Value<String> animeId;
+  final Value<String> title;
+  final Value<String?> altTitle;
+  final Value<String?> posterUrl;
+  final Value<String?> animeType;
+  final Value<int?> year;
+  final Value<int?> episodesTotal;
+  final Value<int?> favoritesCount;
+  final Value<DateTime> snapshotSavedAt;
+  final Value<int> rowid;
+  const LibraryPresentationSnapshotsCompanion({
+    this.animeId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.altTitle = const Value.absent(),
+    this.posterUrl = const Value.absent(),
+    this.animeType = const Value.absent(),
+    this.year = const Value.absent(),
+    this.episodesTotal = const Value.absent(),
+    this.favoritesCount = const Value.absent(),
+    this.snapshotSavedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LibraryPresentationSnapshotsCompanion.insert({
+    required String animeId,
+    required String title,
+    this.altTitle = const Value.absent(),
+    this.posterUrl = const Value.absent(),
+    this.animeType = const Value.absent(),
+    this.year = const Value.absent(),
+    this.episodesTotal = const Value.absent(),
+    this.favoritesCount = const Value.absent(),
+    required DateTime snapshotSavedAt,
+    this.rowid = const Value.absent(),
+  }) : animeId = Value(animeId),
+       title = Value(title),
+       snapshotSavedAt = Value(snapshotSavedAt);
+  static Insertable<LibraryPresentationSnapshot> custom({
+    Expression<String>? animeId,
+    Expression<String>? title,
+    Expression<String>? altTitle,
+    Expression<String>? posterUrl,
+    Expression<String>? animeType,
+    Expression<int>? year,
+    Expression<int>? episodesTotal,
+    Expression<int>? favoritesCount,
+    Expression<DateTime>? snapshotSavedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (animeId != null) 'anime_id': animeId,
+      if (title != null) 'title': title,
+      if (altTitle != null) 'alt_title': altTitle,
+      if (posterUrl != null) 'poster_url': posterUrl,
+      if (animeType != null) 'type': animeType,
+      if (year != null) 'year': year,
+      if (episodesTotal != null) 'episodes_total': episodesTotal,
+      if (favoritesCount != null) 'favorites_count': favoritesCount,
+      if (snapshotSavedAt != null) 'snapshot_saved_at': snapshotSavedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LibraryPresentationSnapshotsCompanion copyWith({
+    Value<String>? animeId,
+    Value<String>? title,
+    Value<String?>? altTitle,
+    Value<String?>? posterUrl,
+    Value<String?>? animeType,
+    Value<int?>? year,
+    Value<int?>? episodesTotal,
+    Value<int?>? favoritesCount,
+    Value<DateTime>? snapshotSavedAt,
+    Value<int>? rowid,
+  }) {
+    return LibraryPresentationSnapshotsCompanion(
+      animeId: animeId ?? this.animeId,
+      title: title ?? this.title,
+      altTitle: altTitle ?? this.altTitle,
+      posterUrl: posterUrl ?? this.posterUrl,
+      animeType: animeType ?? this.animeType,
+      year: year ?? this.year,
+      episodesTotal: episodesTotal ?? this.episodesTotal,
+      favoritesCount: favoritesCount ?? this.favoritesCount,
+      snapshotSavedAt: snapshotSavedAt ?? this.snapshotSavedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (animeId.present) {
+      map['anime_id'] = Variable<String>(animeId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (altTitle.present) {
+      map['alt_title'] = Variable<String>(altTitle.value);
+    }
+    if (posterUrl.present) {
+      map['poster_url'] = Variable<String>(posterUrl.value);
+    }
+    if (animeType.present) {
+      map['type'] = Variable<String>(animeType.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<int>(year.value);
+    }
+    if (episodesTotal.present) {
+      map['episodes_total'] = Variable<int>(episodesTotal.value);
+    }
+    if (favoritesCount.present) {
+      map['favorites_count'] = Variable<int>(favoritesCount.value);
+    }
+    if (snapshotSavedAt.present) {
+      map['snapshot_saved_at'] = Variable<DateTime>(snapshotSavedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LibraryPresentationSnapshotsCompanion(')
+          ..write('animeId: $animeId, ')
+          ..write('title: $title, ')
+          ..write('altTitle: $altTitle, ')
+          ..write('posterUrl: $posterUrl, ')
+          ..write('animeType: $animeType, ')
+          ..write('year: $year, ')
+          ..write('episodesTotal: $episodesTotal, ')
+          ..write('favoritesCount: $favoritesCount, ')
+          ..write('snapshotSavedAt: $snapshotSavedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $CachedSummaryListsTable extends CachedSummaryLists
     with TableInfo<$CachedSummaryListsTable, CachedSummaryList> {
   @override
@@ -2120,6 +2716,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $WatchProgressEntriesTable(this);
   late final $SearchHistoryEntriesTable searchHistoryEntries =
       $SearchHistoryEntriesTable(this);
+  late final $LibraryPresentationSnapshotsTable libraryPresentationSnapshots =
+      $LibraryPresentationSnapshotsTable(this);
   late final $CachedSummaryListsTable cachedSummaryLists =
       $CachedSummaryListsTable(this);
   late final $CachedReleaseDetailsTable cachedReleaseDetails =
@@ -2136,6 +2734,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     libraryEntries,
     watchProgressEntries,
     searchHistoryEntries,
+    libraryPresentationSnapshots,
     cachedSummaryLists,
     cachedReleaseDetails,
     cachedFranchiseData,
@@ -2745,6 +3344,307 @@ typedef $$SearchHistoryEntriesTableProcessedTableManager =
         >,
       ),
       SearchHistoryEntry,
+      PrefetchHooks Function()
+    >;
+typedef $$LibraryPresentationSnapshotsTableCreateCompanionBuilder =
+    LibraryPresentationSnapshotsCompanion Function({
+      required String animeId,
+      required String title,
+      Value<String?> altTitle,
+      Value<String?> posterUrl,
+      Value<String?> animeType,
+      Value<int?> year,
+      Value<int?> episodesTotal,
+      Value<int?> favoritesCount,
+      required DateTime snapshotSavedAt,
+      Value<int> rowid,
+    });
+typedef $$LibraryPresentationSnapshotsTableUpdateCompanionBuilder =
+    LibraryPresentationSnapshotsCompanion Function({
+      Value<String> animeId,
+      Value<String> title,
+      Value<String?> altTitle,
+      Value<String?> posterUrl,
+      Value<String?> animeType,
+      Value<int?> year,
+      Value<int?> episodesTotal,
+      Value<int?> favoritesCount,
+      Value<DateTime> snapshotSavedAt,
+      Value<int> rowid,
+    });
+
+class $$LibraryPresentationSnapshotsTableFilterComposer
+    extends Composer<_$AppDatabase, $LibraryPresentationSnapshotsTable> {
+  $$LibraryPresentationSnapshotsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get animeId => $composableBuilder(
+    column: $table.animeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get altTitle => $composableBuilder(
+    column: $table.altTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get posterUrl => $composableBuilder(
+    column: $table.posterUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get animeType => $composableBuilder(
+    column: $table.animeType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get episodesTotal => $composableBuilder(
+    column: $table.episodesTotal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get favoritesCount => $composableBuilder(
+    column: $table.favoritesCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get snapshotSavedAt => $composableBuilder(
+    column: $table.snapshotSavedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LibraryPresentationSnapshotsTableOrderingComposer
+    extends Composer<_$AppDatabase, $LibraryPresentationSnapshotsTable> {
+  $$LibraryPresentationSnapshotsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get animeId => $composableBuilder(
+    column: $table.animeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get altTitle => $composableBuilder(
+    column: $table.altTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get posterUrl => $composableBuilder(
+    column: $table.posterUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get animeType => $composableBuilder(
+    column: $table.animeType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get episodesTotal => $composableBuilder(
+    column: $table.episodesTotal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get favoritesCount => $composableBuilder(
+    column: $table.favoritesCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get snapshotSavedAt => $composableBuilder(
+    column: $table.snapshotSavedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LibraryPresentationSnapshotsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LibraryPresentationSnapshotsTable> {
+  $$LibraryPresentationSnapshotsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get animeId =>
+      $composableBuilder(column: $table.animeId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get altTitle =>
+      $composableBuilder(column: $table.altTitle, builder: (column) => column);
+
+  GeneratedColumn<String> get posterUrl =>
+      $composableBuilder(column: $table.posterUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get animeType =>
+      $composableBuilder(column: $table.animeType, builder: (column) => column);
+
+  GeneratedColumn<int> get year =>
+      $composableBuilder(column: $table.year, builder: (column) => column);
+
+  GeneratedColumn<int> get episodesTotal => $composableBuilder(
+    column: $table.episodesTotal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get favoritesCount => $composableBuilder(
+    column: $table.favoritesCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get snapshotSavedAt => $composableBuilder(
+    column: $table.snapshotSavedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$LibraryPresentationSnapshotsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LibraryPresentationSnapshotsTable,
+          LibraryPresentationSnapshot,
+          $$LibraryPresentationSnapshotsTableFilterComposer,
+          $$LibraryPresentationSnapshotsTableOrderingComposer,
+          $$LibraryPresentationSnapshotsTableAnnotationComposer,
+          $$LibraryPresentationSnapshotsTableCreateCompanionBuilder,
+          $$LibraryPresentationSnapshotsTableUpdateCompanionBuilder,
+          (
+            LibraryPresentationSnapshot,
+            BaseReferences<
+              _$AppDatabase,
+              $LibraryPresentationSnapshotsTable,
+              LibraryPresentationSnapshot
+            >,
+          ),
+          LibraryPresentationSnapshot,
+          PrefetchHooks Function()
+        > {
+  $$LibraryPresentationSnapshotsTableTableManager(
+    _$AppDatabase db,
+    $LibraryPresentationSnapshotsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LibraryPresentationSnapshotsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$LibraryPresentationSnapshotsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$LibraryPresentationSnapshotsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> animeId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> altTitle = const Value.absent(),
+                Value<String?> posterUrl = const Value.absent(),
+                Value<String?> animeType = const Value.absent(),
+                Value<int?> year = const Value.absent(),
+                Value<int?> episodesTotal = const Value.absent(),
+                Value<int?> favoritesCount = const Value.absent(),
+                Value<DateTime> snapshotSavedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LibraryPresentationSnapshotsCompanion(
+                animeId: animeId,
+                title: title,
+                altTitle: altTitle,
+                posterUrl: posterUrl,
+                animeType: animeType,
+                year: year,
+                episodesTotal: episodesTotal,
+                favoritesCount: favoritesCount,
+                snapshotSavedAt: snapshotSavedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String animeId,
+                required String title,
+                Value<String?> altTitle = const Value.absent(),
+                Value<String?> posterUrl = const Value.absent(),
+                Value<String?> animeType = const Value.absent(),
+                Value<int?> year = const Value.absent(),
+                Value<int?> episodesTotal = const Value.absent(),
+                Value<int?> favoritesCount = const Value.absent(),
+                required DateTime snapshotSavedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => LibraryPresentationSnapshotsCompanion.insert(
+                animeId: animeId,
+                title: title,
+                altTitle: altTitle,
+                posterUrl: posterUrl,
+                animeType: animeType,
+                year: year,
+                episodesTotal: episodesTotal,
+                favoritesCount: favoritesCount,
+                snapshotSavedAt: snapshotSavedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LibraryPresentationSnapshotsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LibraryPresentationSnapshotsTable,
+      LibraryPresentationSnapshot,
+      $$LibraryPresentationSnapshotsTableFilterComposer,
+      $$LibraryPresentationSnapshotsTableOrderingComposer,
+      $$LibraryPresentationSnapshotsTableAnnotationComposer,
+      $$LibraryPresentationSnapshotsTableCreateCompanionBuilder,
+      $$LibraryPresentationSnapshotsTableUpdateCompanionBuilder,
+      (
+        LibraryPresentationSnapshot,
+        BaseReferences<
+          _$AppDatabase,
+          $LibraryPresentationSnapshotsTable,
+          LibraryPresentationSnapshot
+        >,
+      ),
+      LibraryPresentationSnapshot,
       PrefetchHooks Function()
     >;
 typedef $$CachedSummaryListsTableCreateCompanionBuilder =
@@ -3463,6 +4363,12 @@ class $AppDatabaseManager {
       $$WatchProgressEntriesTableTableManager(_db, _db.watchProgressEntries);
   $$SearchHistoryEntriesTableTableManager get searchHistoryEntries =>
       $$SearchHistoryEntriesTableTableManager(_db, _db.searchHistoryEntries);
+  $$LibraryPresentationSnapshotsTableTableManager
+  get libraryPresentationSnapshots =>
+      $$LibraryPresentationSnapshotsTableTableManager(
+        _db,
+        _db.libraryPresentationSnapshots,
+      );
   $$CachedSummaryListsTableTableManager get cachedSummaryLists =>
       $$CachedSummaryListsTableTableManager(_db, _db.cachedSummaryLists);
   $$CachedReleaseDetailsTableTableManager get cachedReleaseDetails =>
