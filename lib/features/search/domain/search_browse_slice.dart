@@ -1,0 +1,1 @@
+enum SearchBrowseSlice { latest, ongoing }
