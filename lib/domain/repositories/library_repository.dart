@@ -1,5 +1,6 @@
 import '../enums/enums.dart';
 import '../models/library_entry.dart';
+import '../models/library_presentation_snapshot.dart';
 
 abstract interface class LibraryRepository {
   Stream<List<LibraryEntry>> watchAll();
@@ -8,9 +9,16 @@ abstract interface class LibraryRepository {
 
   Future<LibraryEntry?> getByAnimeId(String animeId);
 
-  Future<void> setStatus(String animeId, LibraryStatus status);
+  Future<void> setStatus(
+    String animeId,
+    LibraryStatus status, {
+    LibraryPresentationSnapshot? snapshot,
+  });
 
-  Future<void> toggleFavorite(String animeId);
+  Future<void> toggleFavorite(
+    String animeId, {
+    LibraryPresentationSnapshot? snapshot,
+  });
 
   Future<void> removeFromLibrary(String animeId);
 

@@ -8,7 +8,11 @@ import '../../../domain/enums/enums.dart';
 import '../../../domain/models/anime_summary.dart';
 import '../../../domain/models/library_entry.dart';
 import '../../../domain/models/search_history_entry.dart';
+import '../../../shared/utils/anime_labels.dart';
+import '../../../shared/widgets/action_feedback.dart';
 import '../../../shared/widgets/anime_poster_image.dart';
+import '../../../shared/widgets/app_empty_state.dart';
+import '../../../shared/widgets/presentation_chips.dart';
 import '../application/search_providers.dart';
 import '../domain/search_browse_slice.dart';
 
@@ -211,7 +215,12 @@ class _SearchResultsSection extends ConsumerWidget {
           libraryOverlay: libraryOverlay,
         );
       },
-      error: (error, stackTrace) => _ErrorState(message: _errorMessage(error)),
+      error: (error, stackTrace) => _ErrorState(
+        message: _errorMessage(error),
+        onRetry: () {
+          ref.invalidate(searchResultsProvider);
+        },
+      ),
       loading: () => const _ResultSkeletonList(),
     );
   }
@@ -248,8 +257,12 @@ class _BrowseSection extends ConsumerWidget {
               libraryOverlay: libraryOverlay,
             );
           },
-          error: (error, stackTrace) =>
-              _ErrorState(message: _errorMessage(error)),
+          error: (error, stackTrace) => _ErrorState(
+            message: _errorMessage(error),
+            onRetry: () {
+              ref.invalidate(searchBrowseResultsProvider(slice));
+            },
+          ),
           loading: () => const _ResultSkeletonList(itemCount: 3),
         ),
       ],
@@ -345,10 +358,10 @@ class _AnimeResultInfo extends StatelessWidget {
           spacing: 6,
           runSpacing: 6,
           children: [
-            _InfoChip(label: _typeLabel(anime.type)),
-            if (anime.year != null) _InfoChip(label: anime.year.toString()),
-            _InfoChip(label: '♥ ${anime.favoritesCount}'),
-            if (anime.isOngoing) const _InfoChip(label: 'Онгоинг'),
+            AppInfoChip(label: animeTypeLabel(anime.type)),
+            if (anime.year != null) AppInfoChip(label: anime.year.toString()),
+            AppInfoChip(label: popularityLabel(anime.favoritesCount)),
+            if (anime.isOngoing) const AppInfoChip(label: 'Онгоинг'),
           ],
         ),
       ],
@@ -384,7 +397,10 @@ class _StatusAction extends ConsumerWidget {
           onSelected: (status) => _setStatus(context, ref, status),
           itemBuilder: (context) => [
             for (final status in LibraryStatus.values)
-              PopupMenuItem(value: status, child: Text(_statusLabel(status))),
+              PopupMenuItem(
+                value: status,
+                child: Text(libraryStatusLabel(status)),
+              ),
           ],
         ),
       ],
@@ -397,31 +413,35 @@ class _StatusAction extends ConsumerWidget {
     LibraryStatus status,
   ) async {
     final previousEntry = libraryEntry;
-    await ref.read(catalogEntryActionsProvider).setStatus(anime.id, status);
+    if (previousEntry?.status == status) {
+      return;
+    }
+
+    try {
+      await ref.read(catalogEntryActionsProvider).setStatus(anime, status);
+    } catch (error) {
+      if (context.mounted) {
+        showActionErrorSnackBar(context, 'Не удалось изменить статус');
+      }
+      return;
+    }
 
     if (!context.mounted) {
       return;
     }
 
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(
-        SnackBar(
-          content: Text('Статус: ${_statusLabel(status)}'),
-          duration: const Duration(seconds: 4),
-          action: SnackBarAction(
-            label: 'Отменить',
-            onPressed: () {
-              final actions = ref.read(catalogEntryActionsProvider);
-              if (previousEntry == null) {
-                actions.removeFromLibrary(anime.id);
-              } else {
-                actions.setStatus(anime.id, previousEntry.status);
-              }
-            },
-          ),
-        ),
-      );
+    showUndoSnackBar(
+      context,
+      message: 'Статус: ${libraryStatusLabel(status)}',
+      onUndo: () {
+        final actions = ref.read(catalogEntryActionsProvider);
+        if (previousEntry == null) {
+          actions.removeFromLibrary(anime.id);
+        } else {
+          actions.setStatus(anime, previousEntry.status);
+        }
+      },
+    );
   }
 }
 
@@ -432,27 +452,9 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Chip(
-      avatar: libraryEntry.isFavorite
-          ? const Icon(Icons.favorite, size: 16)
-          : null,
-      label: Text(_statusLabel(libraryEntry.status)),
-      visualDensity: VisualDensity.compact,
-    );
-  }
-}
-
-class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Chip(
-      label: Text(label),
-      visualDensity: VisualDensity.compact,
-      padding: EdgeInsets.zero,
+    return LibraryStatusChip(
+      status: libraryEntry.status,
+      isFavorite: libraryEntry.isFavorite,
     );
   }
 }
@@ -544,58 +546,28 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-    );
+    return AppEmptyState(text: text);
   }
 }
 
 class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.message});
+  const _ErrorState({required this.message, required this.onRetry});
 
   final String message;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24),
-      child: Text(
-        message,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
+    return AppEmptyState(
+      text: message,
+      actionLabel: 'Повторить',
+      onAction: onRetry,
     );
   }
 }
 
 String _routeId(AnimeSummary anime) {
   return anime.alias.isEmpty ? anime.id : anime.alias;
-}
-
-String _typeLabel(AnimeType type) {
-  return switch (type) {
-    AnimeType.tv => 'ТВ',
-    AnimeType.movie => 'Фильм',
-    AnimeType.ova => 'OVA',
-    AnimeType.ona => 'ONA',
-    AnimeType.special => 'Спешл',
-    AnimeType.unknown => 'Тип неизвестен',
-  };
-}
-
-String _statusLabel(LibraryStatus status) {
-  return switch (status) {
-    LibraryStatus.watching => 'Смотрю',
-    LibraryStatus.planned => 'Хочу посмотреть',
-    LibraryStatus.completed => 'Просмотрено',
-    LibraryStatus.postponed => 'Отложено',
-    LibraryStatus.dropped => 'Брошено',
-  };
 }
 
 String _errorMessage(Object error) {

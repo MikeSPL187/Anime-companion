@@ -1,20 +1,24 @@
 import 'package:ani_app/core/database/app_database.dart' as db;
+import 'package:ani_app/data/repositories/drift_library_presentation_snapshot_repository.dart';
 import 'package:ani_app/data/repositories/drift_library_repository.dart';
 import 'package:ani_app/data/repositories/drift_progress_repository.dart';
 import 'package:ani_app/data/repositories/drift_search_history_repository.dart';
 import 'package:ani_app/domain/enums/enums.dart';
+import 'package:ani_app/domain/models/library_presentation_snapshot.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late db.AppDatabase database;
   late DriftLibraryRepository libraryRepository;
+  late DriftLibraryPresentationSnapshotRepository snapshotRepository;
   late DriftProgressRepository progressRepository;
   late DriftSearchHistoryRepository searchHistoryRepository;
 
   setUp(() {
     database = db.AppDatabase(NativeDatabase.memory());
     libraryRepository = DriftLibraryRepository(database);
+    snapshotRepository = DriftLibraryPresentationSnapshotRepository(database);
     progressRepository = DriftProgressRepository(database);
     searchHistoryRepository = DriftSearchHistoryRepository(database);
   });
@@ -143,6 +147,89 @@ void main() {
       await libraryRepository.updateNote('anime-1', ' ');
       expect((await libraryRepository.getByAnimeId('anime-1'))?.note, isNull);
     });
+
+    test(
+      'stores presentation snapshot when status is set from catalog',
+      () async {
+        await libraryRepository.setStatus(
+          'anime-1',
+          LibraryStatus.planned,
+          snapshot: _snapshot('anime-1', title: 'Наруто'),
+        );
+
+        final entry = await libraryRepository.getByAnimeId('anime-1');
+        final snapshot = await snapshotRepository.getByAnimeId('anime-1');
+
+        expect(entry?.status, LibraryStatus.planned);
+        expect(snapshot?.title, 'Наруто');
+        expect(snapshot?.posterUrl, 'https://example.test/poster.webp');
+        expect(snapshot?.type, AnimeType.tv);
+        expect(snapshot?.episodesTotal, 12);
+      },
+    );
+
+    test('updates presentation snapshot on existing status action', () async {
+      await libraryRepository.setStatus(
+        'anime-1',
+        LibraryStatus.planned,
+        snapshot: _snapshot('anime-1', title: 'Старое название'),
+      );
+
+      await libraryRepository.setStatus(
+        'anime-1',
+        LibraryStatus.watching,
+        snapshot: _snapshot('anime-1', title: 'Новое название'),
+      );
+
+      final entry = await libraryRepository.getByAnimeId('anime-1');
+      final snapshot = await snapshotRepository.getByAnimeId('anime-1');
+
+      expect(entry?.status, LibraryStatus.watching);
+      expect(snapshot?.title, 'Новое название');
+    });
+
+    test('does not save mismatched presentation snapshots', () async {
+      await expectLater(
+        libraryRepository.setStatus(
+          'anime-1',
+          LibraryStatus.planned,
+          snapshot: _snapshot('anime-2', title: 'Наруто'),
+        ),
+        throwsArgumentError,
+      );
+
+      expect(await libraryRepository.getByAnimeId('anime-1'), isNull);
+      expect(await snapshotRepository.getByAnimeId('anime-2'), isNull);
+    });
+  });
+
+  group('DriftLibraryPresentationSnapshotRepository', () {
+    test('saves and updates local presentation snapshots', () async {
+      await snapshotRepository.saveSnapshot(
+        _snapshot('anime-1', title: 'Первое название'),
+      );
+
+      await snapshotRepository.saveSnapshot(
+        _snapshot('anime-1', title: 'Обновлённое название', favoritesCount: 7),
+      );
+
+      final snapshot = await snapshotRepository.getByAnimeId('anime-1');
+      final watched = await snapshotRepository.watchAll().first;
+
+      expect(snapshot?.title, 'Обновлённое название');
+      expect(snapshot?.favoritesCount, 7);
+      expect(watched.keys, ['anime-1']);
+    });
+
+    test('removes local presentation snapshots', () async {
+      await snapshotRepository.saveSnapshot(
+        _snapshot('anime-1', title: 'Наруто'),
+      );
+
+      await snapshotRepository.removeSnapshot('anime-1');
+
+      expect(await snapshotRepository.getByAnimeId('anime-1'), isNull);
+    });
   });
 
   group('DriftProgressRepository', () {
@@ -256,6 +343,24 @@ void main() {
       );
     });
   });
+}
+
+LibraryPresentationSnapshot _snapshot(
+  String animeId, {
+  required String title,
+  int favoritesCount = 5,
+}) {
+  return LibraryPresentationSnapshot(
+    animeId: animeId,
+    title: title,
+    altTitle: 'Alt title',
+    posterUrl: 'https://example.test/poster.webp',
+    type: AnimeType.tv,
+    year: 2024,
+    episodesTotal: 12,
+    favoritesCount: favoritesCount,
+    snapshotSavedAt: DateTime(2026, 4, 9),
+  );
 }
 
 T expectPresent<T extends Object>(T? value) {

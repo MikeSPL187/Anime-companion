@@ -6,6 +6,7 @@ import '../../../data/providers/local_repository_providers.dart';
 import '../../../domain/enums/enums.dart';
 import '../../../domain/models/anime_summary.dart';
 import '../../../domain/models/library_entry.dart';
+import '../../../domain/models/library_presentation_snapshot.dart';
 import '../../../domain/models/search_history_entry.dart';
 import '../domain/search_browse_slice.dart';
 
@@ -101,8 +102,14 @@ class CatalogEntryActions {
 
   final Ref _ref;
 
-  Future<void> setStatus(String animeId, LibraryStatus status) {
-    return _ref.read(libraryRepositoryProvider).setStatus(animeId, status);
+  Future<void> setStatus(AnimeSummary anime, LibraryStatus status) {
+    return _ref
+        .read(libraryRepositoryProvider)
+        .setStatus(
+          anime.id,
+          status,
+          snapshot: LibraryPresentationSnapshot.fromAnimeSummary(anime),
+        );
   }
 
   Future<void> removeFromLibrary(String animeId) {

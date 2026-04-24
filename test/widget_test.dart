@@ -10,5 +10,9 @@ void main() {
 
     expect(find.byIcon(Icons.home), findsOneWidget);
     expect(find.text('Главная'), findsWidgets);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1));
   });
 }

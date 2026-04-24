@@ -1,5 +1,5 @@
 name: ani_app
-description: Android-first anime companion and tracker foundation.
+description: Local-first Android anime companion for catalog lookup, library tracking, progress, schedule, and trust controls.
 publish_to: 'none'
 version: 0.1.0+1
 

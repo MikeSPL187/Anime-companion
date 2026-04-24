@@ -10,7 +10,11 @@ import '../../../domain/models/anime_summary.dart';
 import '../../../domain/models/franchise_entry.dart';
 import '../../../domain/models/library_entry.dart';
 import '../../../domain/models/watch_progress.dart';
+import '../../../shared/utils/anime_labels.dart';
+import '../../../shared/widgets/action_feedback.dart';
 import '../../../shared/widgets/anime_poster_image.dart';
+import '../../../shared/widgets/app_empty_state.dart';
+import '../../../shared/widgets/presentation_chips.dart';
 import '../application/anime_details_providers.dart';
 
 class AnimeDetailsScreen extends ConsumerStatefulWidget {
@@ -34,8 +38,12 @@ class _AnimeDetailsScreenState extends ConsumerState<AnimeDetailsScreen> {
       body: SafeArea(
         child: details.when(
           data: _buildDetails,
-          error: (error, stackTrace) =>
-              _DetailsError(message: _errorMessage(error)),
+          error: (error, stackTrace) => _DetailsError(
+            message: _errorMessage(error),
+            onRetry: () {
+              ref.invalidate(animeDetailsProvider(widget.animeId));
+            },
+          ),
           loading: () => const _DetailsSkeleton(),
         ),
       ),
@@ -111,6 +119,7 @@ class _HeroSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final summary = details.summary;
     final progressValue = progress;
+    final entry = libraryEntry;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,17 +152,20 @@ class _HeroSection extends ConsumerWidget {
                 spacing: 6,
                 runSpacing: 6,
                 children: [
-                  _InfoChip(label: _typeLabel(summary.type)),
+                  AppInfoChip(label: animeTypeLabel(summary.type)),
                   if (summary.year != null)
-                    _InfoChip(label: summary.year.toString()),
+                    AppInfoChip(label: summary.year.toString()),
                   if (summary.season != null)
-                    _InfoChip(label: _seasonLabel(summary.season)),
+                    AppInfoChip(label: animeSeasonLabel(summary.season)),
                   if (summary.ageRating != null)
-                    _InfoChip(label: _ageRatingLabel(summary.ageRating)),
-                  if (summary.isOngoing) const _InfoChip(label: 'Онгоинг'),
-                  _InfoChip(label: '♥ ${summary.favoritesCount}'),
-                  if (libraryEntry != null)
-                    _InfoChip(label: _statusLabel(libraryEntry?.status)),
+                    AppInfoChip(label: ageRatingLabel(summary.ageRating)),
+                  if (summary.isOngoing) const AppInfoChip(label: 'Онгоинг'),
+                  AppInfoChip(label: popularityLabel(summary.favoritesCount)),
+                  if (entry != null)
+                    LibraryStatusChip(
+                      status: entry.status,
+                      isFavorite: entry.isFavorite,
+                    ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -174,7 +186,7 @@ class _HeroSection extends ConsumerWidget {
                             _toggleFavoriteWithUndo(
                               context: context,
                               ref: ref,
-                              animeId: summary.id,
+                              anime: summary,
                             );
                           },
                     icon: Icon(
@@ -189,7 +201,7 @@ class _HeroSection extends ConsumerWidget {
                       _setStatusWithUndo(
                         context: context,
                         ref: ref,
-                        animeId: summary.id,
+                        anime: summary,
                         status: status,
                         previousEntry: libraryEntry,
                       );
@@ -198,7 +210,7 @@ class _HeroSection extends ConsumerWidget {
                       for (final status in LibraryStatus.values)
                         PopupMenuItem(
                           value: status,
-                          child: Text(_statusLabel(status)),
+                          child: Text(libraryStatusLabel(status)),
                         ),
                     ],
                   ),
@@ -206,7 +218,7 @@ class _HeroSection extends ConsumerWidget {
               ),
               if (progressValue != null)
                 Text(
-                  _progressLabel(progressValue, summary.episodesTotal),
+                  watchProgressLabel(progressValue, summary.episodesTotal),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
             ],
@@ -237,7 +249,7 @@ class _DetailsCta extends ConsumerWidget {
           _setStatusWithUndo(
             context: context,
             ref: ref,
-            animeId: summary.id,
+            anime: summary,
             status: LibraryStatus.planned,
             previousEntry: null,
           );
@@ -252,7 +264,7 @@ class _DetailsCta extends ConsumerWidget {
           _setStatusWithUndo(
             context: context,
             ref: ref,
-            animeId: summary.id,
+            anime: summary,
             status: LibraryStatus.watching,
             previousEntry: entry,
           );
@@ -272,7 +284,7 @@ class _DetailsCta extends ConsumerWidget {
           _setStatusWithUndo(
             context: context,
             ref: ref,
-            animeId: summary.id,
+            anime: summary,
             status: LibraryStatus.watching,
             previousEntry: entry,
           );
@@ -335,8 +347,8 @@ class _MetadataSection extends StatelessWidget {
     final summary = details.summary;
     final metadata = [
       if (details.genres.isNotEmpty) details.genres.join(', '),
-      _episodesLabel(summary.episodesTotal, progress),
-      if (summary.publishDay != null) _publishDayLabel(summary.publishDay),
+      episodesProgressLabel(summary.episodesTotal, progress),
+      if (summary.publishDay != null) publishDayLabel(summary.publishDay),
       if (details.averageEpisodeDurationSec != null)
         '${(details.averageEpisodeDurationSec ?? 0) ~/ 60} мин',
     ];
@@ -346,7 +358,7 @@ class _MetadataSection extends StatelessWidget {
       runSpacing: 8,
       children: [
         for (final item in metadata)
-          if (item != null && item.isNotEmpty) _InfoChip(label: item),
+          if (item != null && item.isNotEmpty) AppInfoChip(label: item),
       ],
     );
   }
@@ -443,6 +455,13 @@ class _FranchiseSection extends StatelessWidget {
       );
     }
 
+    if (entries.length == 1 && entries.single.releaseId == currentAnimeId) {
+      return const _SectionText(
+        title: 'Франшиза',
+        text: 'Других тайтлов во франшизе пока нет',
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -474,6 +493,8 @@ class _FranchiseTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localEntry = libraryEntry;
+
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: SizedBox(
@@ -492,10 +513,16 @@ class _FranchiseTile extends StatelessWidget {
         spacing: 6,
         runSpacing: 4,
         children: [
-          if (entry.sortOrder != null) Text('Порядок: ${entry.sortOrder}'),
-          if (entry.summary.year != null) Text(entry.summary.year.toString()),
-          if (libraryEntry != null) Text(_statusLabel(libraryEntry?.status)),
-          if (isCurrent) const Text('Открыто сейчас'),
+          if (entry.sortOrder != null)
+            AppInfoChip(label: 'Порядок: ${entry.sortOrder}'),
+          if (entry.summary.year != null)
+            AppInfoChip(label: entry.summary.year.toString()),
+          if (localEntry != null)
+            LibraryStatusChip(
+              status: localEntry.status,
+              isFavorite: localEntry.isFavorite,
+            ),
+          if (isCurrent) const AppInfoChip(label: 'Открыто сейчас'),
         ],
       ),
       onTap: isCurrent
@@ -523,7 +550,7 @@ class _AdditionalSection extends StatelessWidget {
         const SizedBox(height: 8),
         if (details.membersCount != null)
           Text('Участников озвучки: ${details.membersCount}'),
-        if (updatedAt != null) Text('Обновлено: ${_dateLabel(updatedAt)}'),
+        if (updatedAt != null) Text('Обновлено: ${dateLabel(updatedAt)}'),
         Text('ID релиза: ${details.summary.id}'),
       ],
     );
@@ -546,17 +573,6 @@ class _SectionText extends StatelessWidget {
         Text(text),
       ],
     );
-  }
-}
-
-class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Chip(label: Text(label), visualDensity: VisualDensity.compact);
   }
 }
 
@@ -641,169 +657,92 @@ class _SkeletonBlock extends StatelessWidget {
 }
 
 class _DetailsError extends StatelessWidget {
-  const _DetailsError({required this.message});
+  const _DetailsError({required this.message, required this.onRetry});
 
   final String message;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
+      child: AppEmptyState(
+        text: message,
+        actionLabel: 'Повторить',
+        onAction: onRetry,
         padding: const EdgeInsets.all(24),
-        child: Text(message, textAlign: TextAlign.center),
       ),
     );
   }
-}
-
-String? _episodesLabel(int? total, WatchProgress? progress) {
-  final watched = progress?.watchedEpisodes;
-  if (watched != null && total != null) {
-    return 'Прогресс: $watched/$total';
-  }
-  if (watched != null) {
-    return 'Просмотрено: $watched';
-  }
-  if (total != null) {
-    return 'Эпизодов: $total';
-  }
-  return null;
-}
-
-String _progressLabel(WatchProgress progress, int? total) {
-  if (total == null) {
-    return 'Просмотрено: ${progress.watchedEpisodes}';
-  }
-
-  return 'Прогресс: ${progress.watchedEpisodes}/$total';
 }
 
 String _routeId(AnimeSummary anime) {
   return anime.alias.isEmpty ? anime.id : anime.alias;
 }
 
-String _typeLabel(AnimeType type) {
-  return switch (type) {
-    AnimeType.tv => 'ТВ',
-    AnimeType.movie => 'Фильм',
-    AnimeType.ova => 'OVA',
-    AnimeType.ona => 'ONA',
-    AnimeType.special => 'Спешл',
-    AnimeType.unknown => 'Тип неизвестен',
-  };
-}
-
-String _seasonLabel(AnimeSeason? season) {
-  return switch (season) {
-    AnimeSeason.winter => 'Зима',
-    AnimeSeason.spring => 'Весна',
-    AnimeSeason.summer => 'Лето',
-    AnimeSeason.fall => 'Осень',
-    null => '',
-  };
-}
-
-String _publishDayLabel(PublishDay? day) {
-  return switch (day) {
-    PublishDay.monday => 'Понедельник',
-    PublishDay.tuesday => 'Вторник',
-    PublishDay.wednesday => 'Среда',
-    PublishDay.thursday => 'Четверг',
-    PublishDay.friday => 'Пятница',
-    PublishDay.saturday => 'Суббота',
-    PublishDay.sunday => 'Воскресенье',
-    null => '',
-  };
-}
-
-String _ageRatingLabel(AgeRating? rating) {
-  return switch (rating) {
-    AgeRating.g => '0+',
-    AgeRating.pg => '6+',
-    AgeRating.pg13 => '12+',
-    AgeRating.r => '16+',
-    AgeRating.rPlus => '18+',
-    AgeRating.rx => '18+',
-    AgeRating.unknown => 'Возраст неизвестен',
-    null => '',
-  };
-}
-
-String _statusLabel(LibraryStatus? status) {
-  return switch (status) {
-    LibraryStatus.watching => 'Смотрю',
-    LibraryStatus.planned => 'Хочу посмотреть',
-    LibraryStatus.completed => 'Просмотрено',
-    LibraryStatus.postponed => 'Отложено',
-    LibraryStatus.dropped => 'Брошено',
-    null => '',
-  };
-}
-
-String _dateLabel(DateTime date) {
-  return '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}';
-}
-
 Future<void> _setStatusWithUndo({
   required BuildContext context,
   required WidgetRef ref,
-  required String animeId,
+  required AnimeSummary anime,
   required LibraryStatus status,
   required LibraryEntry? previousEntry,
 }) async {
+  if (previousEntry?.status == status) {
+    return;
+  }
+
   final actions = ref.read(animeDetailsActionsProvider);
-  await actions.setStatus(animeId, status);
+  try {
+    await actions.setStatus(anime, status);
+  } catch (error) {
+    if (context.mounted) {
+      showActionErrorSnackBar(context, 'Не удалось изменить статус');
+    }
+    return;
+  }
 
   if (!context.mounted) {
     return;
   }
 
-  final messenger = ScaffoldMessenger.of(context);
-  messenger.clearSnackBars();
-  messenger.showSnackBar(
-    SnackBar(
-      duration: const Duration(seconds: 5),
-      content: Text('Статус: ${_statusLabel(status)}'),
-      action: SnackBarAction(
-        label: 'Отменить',
-        onPressed: () {
-          if (previousEntry == null) {
-            actions.removeFromLibrary(animeId);
-            return;
-          }
+  showUndoSnackBar(
+    context,
+    message: 'Статус: ${libraryStatusLabel(status)}',
+    onUndo: () {
+      if (previousEntry == null) {
+        actions.removeFromLibrary(anime.id);
+        return;
+      }
 
-          actions.setStatus(animeId, previousEntry.status);
-        },
-      ),
-    ),
+      actions.setStatus(anime, previousEntry.status);
+    },
   );
 }
 
 Future<void> _toggleFavoriteWithUndo({
   required BuildContext context,
   required WidgetRef ref,
-  required String animeId,
+  required AnimeSummary anime,
 }) async {
   final actions = ref.read(animeDetailsActionsProvider);
-  await actions.toggleFavorite(animeId);
+  try {
+    await actions.toggleFavorite(anime);
+  } catch (error) {
+    if (context.mounted) {
+      showActionErrorSnackBar(context, 'Не удалось обновить избранное');
+    }
+    return;
+  }
 
   if (!context.mounted) {
     return;
   }
 
-  final messenger = ScaffoldMessenger.of(context);
-  messenger.clearSnackBars();
-  messenger.showSnackBar(
-    SnackBar(
-      duration: const Duration(seconds: 5),
-      content: const Text('Избранное обновлено'),
-      action: SnackBarAction(
-        label: 'Отменить',
-        onPressed: () {
-          actions.toggleFavorite(animeId);
-        },
-      ),
-    ),
+  showUndoSnackBar(
+    context,
+    message: 'Избранное обновлено',
+    onUndo: () {
+      actions.toggleFavorite(anime);
+    },
   );
 }
 

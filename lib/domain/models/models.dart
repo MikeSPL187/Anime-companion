@@ -3,6 +3,7 @@ export 'anime_episode.dart';
 export 'anime_summary.dart';
 export 'franchise_entry.dart';
 export 'library_entry.dart';
+export 'library_presentation_snapshot.dart';
 export 'schedule_item.dart';
 export 'search_history_entry.dart';
 export 'watch_progress.dart';

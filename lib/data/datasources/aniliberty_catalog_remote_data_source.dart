@@ -95,6 +95,8 @@ abstract final class AniLibertyApiEndpoints {
   static const releases = '$baseUrl/anime/releases';
   static const genreReleases = '$baseUrl/anime/genres';
   static const franchisesByRelease = '$baseUrl/anime/franchises/release';
+  static const scheduleNow = '$baseUrl/anime/schedule/now';
+  static const scheduleWeek = '$baseUrl/anime/schedule/week';
 }
 
 abstract final class AniLibertyCatalogFilters {
